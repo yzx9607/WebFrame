@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+ <typeAliases>
+<!-- 自动生成的机制:实体类名首字母小写 -->
+ <package name="com.yang.bean"></package>
+</typeAliases>
+
+</configuration>

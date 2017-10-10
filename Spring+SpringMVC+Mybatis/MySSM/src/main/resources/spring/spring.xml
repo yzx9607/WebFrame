@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd 
+	http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-4.3.xsd 
+    http://www.springframework.org/schema/mvc  
+    http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd 
+    http://www.springframework.org/schema/tx 
+    http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+     <!-- 1.引入外部文件 数据库的连接信息-->
+    <context:property-placeholder location="classpath:db.properties"/>
+	<!-- 配置数据源，使用的是alibaba的Druid(德鲁伊)数据源 -->
+	<bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="url" value="${url}" />
+		<property name="username" value="${user_name}" />
+		<property name="password" value="${password}" />
+	</bean>
+    <!-- 2.mybatis的sqlSessionFactory对象交由spring框架进行管理 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="configLocation" value="classpath:mybatis/mybatis.xml"></property>
+    <property name="dataSource" ref="dataSource"></property>
+    <!-- 3.mybatis映射文件 -->
+    <property name="mapperLocations" value="classpath:mybatis/mapper/*.xml"></property>
+    </bean>
+    <!--4. 支持mybatis面向接口的开发，扫描接口-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--指定会话工厂，如果当前上下文中只定义了一个则该属性可省去 -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+        <!-- 指定要自动扫描接口的基础包，实现接口 -->
+        <property name="basePackage" value="com.yang.dao"></property>
+    </bean>
+     <!--5 声明式事务管理 -->
+    <!--定义事物管理器，由spring管理事务 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!--6. 支持注解驱动的事务管理，指定事务管理器 -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    
+</beans>
